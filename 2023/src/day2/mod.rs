@@ -1,3 +1,5 @@
+use crate::Solution;
+
 #[derive(Debug, Default)]
 pub struct CubeSet {
     red: usize,
@@ -85,22 +87,42 @@ where
     }
 }
 
-pub fn part1(input: &str) -> usize {
-    input
-        .lines()
-        .map(Game::from)
-        .filter(Game::is_possible)
-        .map(|g| g.id)
-        .sum()
+struct Part1;
+
+impl Solution for Part1 {
+    type Item = Game;
+    type Output = usize;
+
+    const EXAMPLE: &'static str = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
+
+    const INPUT: &'static str = include_str!("input.txt");
+
+    fn calculate(init: Self::Output, game: Self::Item) -> Self::Output {
+        init + game.is_possible().then_some(game.id).unwrap_or(0)
+    }
 }
 
-pub fn part2(input: &str) -> usize {
-    input
-        .lines()
-        .map(Game::from)
-        .map(|g| g.min_set())
-        .map(|s| s.power())
-        .sum()
+struct Part2;
+
+impl Solution for Part2 {
+    type Item = Game;
+    type Output = usize;
+
+    const EXAMPLE: &'static str = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
+
+    const INPUT: &'static str = include_str!("input.txt");
+
+    fn calculate(init: Self::Output, game: Self::Item) -> Self::Output {
+        init + game.min_set().power()
+    }
 }
 
 #[cfg(test)]
@@ -108,34 +130,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_part1_example() {
-        let input = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
-Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
-Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
-Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
-        assert_eq!(part1(input), 8);
-    }
-
-    #[test]
     fn test_part1() {
-        let input = include_str!("input.txt");
-        assert_eq!(part1(input), 2156);
-    }
-
-    #[test]
-    fn test_part2_example() {
-        let input = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
-Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
-Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
-Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
-        assert_eq!(part2(input), 2286);
+        let sol = Part1;
+        assert_eq!(sol.run_example(), 8);
+        assert_eq!(sol.run(), 2156);
     }
 
     #[test]
     fn test_part2() {
-        let input = include_str!("input.txt");
-        assert_eq!(part2(input), 66909);
+        let sol = Part2;
+        assert_eq!(sol.run_example(), 2286);
+        assert_eq!(sol.run(), 66909);
     }
 }
