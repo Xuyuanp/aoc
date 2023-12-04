@@ -91,7 +91,8 @@ struct Part1;
 
 impl Solution for Part1 {
     type Item = Game;
-    type Output = usize;
+    type Acc = usize;
+    type Output = Self::Acc;
 
     const EXAMPLE: &'static str = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
@@ -101,8 +102,8 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
 
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(init: Self::Output, game: Self::Item) -> Self::Output {
-        init + game.is_possible().then_some(game.id).unwrap_or(0)
+    fn calculate(acc: Self::Acc, game: Self::Item) -> Self::Acc {
+        acc + game.is_possible().then_some(game.id).unwrap_or(0)
     }
 }
 
@@ -110,7 +111,8 @@ struct Part2;
 
 impl Solution for Part2 {
     type Item = Game;
-    type Output = usize;
+    type Acc = usize;
+    type Output = Self::Acc;
 
     const EXAMPLE: &'static str = r#"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
@@ -120,8 +122,8 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
 
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(init: Self::Output, game: Self::Item) -> Self::Output {
-        init + game.min_set().power()
+    fn calculate(acc: Self::Acc, game: Self::Item) -> Self::Acc {
+        acc + game.min_set().power()
     }
 }
 

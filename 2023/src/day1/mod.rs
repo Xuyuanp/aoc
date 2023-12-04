@@ -4,14 +4,16 @@ struct Part1;
 
 impl Solution for Part1 {
     type Item = &'static str;
-    type Output = usize;
+    type Acc = usize;
+    type Output = Self::Acc;
+
     const EXAMPLE: &'static str = r#"1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
 treb7uchet"#;
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(init: Self::Output, line: Self::Item) -> Self::Output {
+    fn calculate(acc: Self::Acc, line: Self::Item) -> Self::Acc {
         let first = line
             .bytes()
             .filter(|c| c.is_ascii_digit())
@@ -25,7 +27,7 @@ treb7uchet"#;
             .map(|c| (c - b'0') as usize)
             .next()
             .unwrap();
-        init + first * 10 + last
+        acc + first * 10 + last
     }
 }
 
@@ -83,7 +85,9 @@ struct Part2;
 
 impl Solution for Part2 {
     type Item = &'static str;
-    type Output = usize;
+    type Acc = usize;
+    type Output = Self::Acc;
+
     const EXAMPLE: &'static str = r#"two1nine
 eightwothree
 abcone2threexyz
@@ -93,10 +97,10 @@ zoneight234
 7pqrstsixteen"#;
     const INPUT: &'static str = Part1::INPUT;
 
-    fn calculate(init: Self::Output, line: Self::Item) -> Self::Output {
+    fn calculate(acc: Self::Acc, line: Self::Item) -> Self::Acc {
         let first = find_first_digit(line).unwrap();
         let last = find_last_digit(line).unwrap();
-        init + first * 10 + last
+        acc + first * 10 + last
     }
 }
 
