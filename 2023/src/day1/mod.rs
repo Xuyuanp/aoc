@@ -36,49 +36,29 @@ static NUMBERS: [&str; 10] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
-fn find_first_digit(line: &str) -> Option<usize> {
-    line.bytes()
+fn replace_number(s: &str) -> Option<u8> {
+    NUMBERS
+        .iter()
         .enumerate()
-        .map(|(i, c)| {
-            NUMBERS
-                .iter()
-                .enumerate()
-                .map(|(digit, prefix)| (b'0' + digit as u8, prefix))
-                .find_map(|(digit, prefix)| {
-                    if line[i..].starts_with(prefix) {
-                        Some(digit)
-                    } else {
-                        None
-                    }
-                })
-                .unwrap_or(c)
-        })
-        .filter(|c| c.is_ascii_digit())
-        .map(|c| (c - b'0') as usize)
-        .next()
+        .skip(1) // skip placeholder
+        .map(|(digit, prefix)| (b'0' + digit as u8, prefix))
+        .find_map(|(digit, prefix)| s.starts_with(prefix).then_some(digit))
 }
 
-fn find_last_digit(line: &str) -> Option<usize> {
-    line.bytes()
-        .enumerate()
-        .rev()
-        .map(|(i, c)| {
-            NUMBERS
-                .iter()
-                .enumerate()
-                .map(|(digit, prefix)| (b'0' + digit as u8, prefix))
-                .find_map(|(digit, prefix)| {
-                    if line[i..].starts_with(prefix) {
-                        Some(digit)
-                    } else {
-                        None
-                    }
-                })
-                .unwrap_or(c)
-        })
-        .filter(|c| c.is_ascii_digit())
-        .map(|c| (c - b'0') as usize)
-        .next()
+fn find_first_digit(line: &str, rev: bool) -> Option<usize> {
+    fn helper<'a>(iter: impl Iterator<Item = (&'a str, u8)>) -> Option<usize> {
+        iter.map(|(s, c)| replace_number(s).unwrap_or(c))
+            .filter(|c| c.is_ascii_digit())
+            .map(|c| (c - b'0') as usize)
+            .next()
+    }
+
+    let iter = line.bytes().enumerate().map(|(i, c)| (&line[i..], c));
+    if rev {
+        helper(iter.rev())
+    } else {
+        helper(iter)
+    }
 }
 
 struct Part2;
@@ -98,8 +78,8 @@ zoneight234
     const INPUT: &'static str = Part1::INPUT;
 
     fn calculate(acc: Self::Acc, line: Self::Item) -> Self::Acc {
-        let first = find_first_digit(line).unwrap();
-        let last = find_last_digit(line).unwrap();
+        let first = find_first_digit(line, false).unwrap();
+        let last = find_first_digit(line, true).unwrap();
         acc + first * 10 + last
     }
 }
