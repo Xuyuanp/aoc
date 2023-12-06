@@ -102,7 +102,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
 
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(acc: Self::Acc, game: Self::Item) -> Self::Acc {
+    fn calculate(acc: usize, game: Game) -> usize {
         acc + game.is_possible().then_some(game.id).unwrap_or(0)
     }
 }
@@ -122,7 +122,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"#;
 
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(acc: Self::Acc, game: Self::Item) -> Self::Acc {
+    fn calculate(acc: usize, game: Game) -> usize {
         acc + game.min_set().power()
     }
 }

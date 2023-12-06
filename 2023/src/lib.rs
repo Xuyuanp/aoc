@@ -9,7 +9,7 @@ pub trait Solution {
     const EXAMPLE: &'static str;
     const INPUT: &'static str;
 
-    fn calculate(init: Self::Acc, input: Self::Item) -> Self::Acc;
+    fn calculate(acc: Self::Acc, item: Self::Item) -> Self::Acc;
 
     fn run_example(&self) -> Self::Output
     where
@@ -17,11 +17,7 @@ pub trait Solution {
         Self::Acc: Default,
         Self::Output: From<Self::Acc>,
     {
-        Self::EXAMPLE
-            .lines()
-            .map(Self::Item::from)
-            .fold(Self::Acc::default(), Self::calculate)
-            .into()
+        self._run(Self::EXAMPLE)
     }
 
     fn run(&self) -> Self::Output
@@ -30,7 +26,16 @@ pub trait Solution {
         Self::Acc: Default,
         Self::Output: From<Self::Acc>,
     {
-        Self::INPUT
+        self._run(Self::INPUT)
+    }
+
+    fn _run(&self, input: &'static str) -> Self::Output
+    where
+        Self::Item: From<&'static str>,
+        Self::Acc: Default,
+        Self::Output: From<Self::Acc>,
+    {
+        input
             .lines()
             .map(Self::Item::from)
             .fold(Self::Acc::default(), Self::calculate)
