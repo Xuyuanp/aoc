@@ -24,21 +24,24 @@ impl CubeSet {
     pub fn power(&self) -> usize {
         self.red * self.green * self.blue
     }
+
+    pub fn as_large_as(mut self, other: &Self) -> Self {
+        self.red = self.red.max(other.red);
+        self.green = self.green.max(other.green);
+        self.blue = self.blue.max(other.blue);
+        self
+    }
 }
 
 impl Game {
     pub fn is_possible(&self) -> bool {
-        self.sets.iter().all(|set| set.is_possible())
+        self.sets.iter().all(CubeSet::is_possible)
     }
 
     pub fn min_set(&self) -> CubeSet {
-        let mut set = CubeSet::default();
-        for s in &self.sets {
-            set.red = set.red.max(s.red);
-            set.green = set.green.max(s.green);
-            set.blue = set.blue.max(s.blue);
-        }
-        set
+        self.sets
+            .iter()
+            .fold(CubeSet::default(), CubeSet::as_large_as)
     }
 }
 
@@ -118,8 +121,8 @@ impl Solution for Part2 {
 
     const INPUT: &'static str = Part1::INPUT;
 
-    fn calculate(acc: usize, game: Game) -> usize {
-        acc + game.min_set().power()
+    fn calculate(power: usize, game: Game) -> usize {
+        power + game.min_set().power()
     }
 }
 

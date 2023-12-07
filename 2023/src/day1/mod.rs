@@ -13,20 +13,9 @@ a1b2c3d4e5f
 treb7uchet"#;
     const INPUT: &'static str = include_str!("input.txt");
 
-    fn calculate(acc: Self::Acc, line: Self::Item) -> Self::Acc {
-        let first = line
-            .bytes()
-            .filter(|c| c.is_ascii_digit())
-            .map(|c| (c - b'0') as usize)
-            .next()
-            .unwrap();
-        let last = line
-            .bytes()
-            .rev()
-            .filter(|c| c.is_ascii_digit())
-            .map(|c| (c - b'0') as usize)
-            .next()
-            .unwrap();
+    fn calculate(acc: usize, line: Self::Item) -> usize {
+        let first = find_first_digit(line, false, false).unwrap();
+        let last = find_first_digit(line, true, false).unwrap();
         acc + first * 10 + last
     }
 }
@@ -40,24 +29,32 @@ fn replace_number(s: &str) -> Option<u8> {
     NUMBERS
         .iter()
         .enumerate()
-        .skip(1) // skip placeholder
-        .map(|(digit, prefix)| (b'0' + digit as u8, prefix))
+        .skip(1 /* skip placeholder */)
+        .map(|(digit, prefix)| (digit as u8 + b'0', prefix))
         .find_map(|(digit, prefix)| s.starts_with(prefix).then_some(digit))
 }
 
-fn find_first_digit(line: &str, rev: bool) -> Option<usize> {
-    fn helper<'a>(iter: impl Iterator<Item = (&'a str, u8)>) -> Option<usize> {
-        iter.map(|(s, c)| replace_number(s).unwrap_or(c))
-            .filter(|c| c.is_ascii_digit())
-            .map(|c| (c - b'0') as usize)
-            .next()
-    }
+fn _find_first_digit<'a, Iter>(iter: Iter, part2: bool) -> Option<usize>
+where
+    Iter: Iterator<Item = (&'a str, u8)>,
+{
+    iter.map(|(s, c)| {
+        part2
+            .then_some(())
+            .and_then(|_| replace_number(s))
+            .unwrap_or(c)
+    })
+    .filter(u8::is_ascii_digit)
+    .map(|c| (c - b'0') as usize)
+    .next()
+}
 
+fn find_first_digit(line: &str, rev: bool, part2: bool) -> Option<usize> {
     let iter = line.bytes().enumerate().map(|(i, c)| (&line[i..], c));
     if rev {
-        helper(iter.rev())
+        _find_first_digit(iter.rev(), part2)
     } else {
-        helper(iter)
+        _find_first_digit(iter, part2)
     }
 }
 
@@ -77,9 +74,9 @@ zoneight234
 7pqrstsixteen"#;
     const INPUT: &'static str = Part1::INPUT;
 
-    fn calculate(acc: Self::Acc, line: Self::Item) -> Self::Acc {
-        let first = find_first_digit(line, false).unwrap();
-        let last = find_first_digit(line, true).unwrap();
+    fn calculate(acc: usize, line: Self::Item) -> usize {
+        let first = find_first_digit(line, false, true).unwrap();
+        let last = find_first_digit(line, true, true).unwrap();
         acc + first * 10 + last
     }
 }
